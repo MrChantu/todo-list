@@ -2,7 +2,6 @@ import Project, { Librarian, Todo } from './Classes';
 
 export default class UI {
     static loadEventListeners() {
-        this.homeEventListeners();
         const addProject = document.querySelector('#addproject');
         addProject.addEventListener('click', () => {
             const projects = document.querySelector('#projects');
@@ -15,8 +14,31 @@ export default class UI {
         });
     }
 
-    static createProject(title) {
-        return new Project(title);
+    static addTodoFunctions(object) {
+        object.editTodo = (title, description, due, priority) => {
+            object.title = title;
+            object.description = description;
+            object.due = due;
+            object.priority = priority;
+        };
+
+        object.getTitle = () => object.title;
+
+        object.getDesc = () => object.description;
+
+        object.getDate = () => object.due;
+
+        object.getPriority = () => object.priority;
+    }
+
+    static addProjectFunctions(object) {
+        object.getTitle = () => object.title;
+
+        object.getID = () => object.id;
+
+        object.getTodos = () => object.Todos;
+
+        object.appendTodo = (todo) => object.Todos.push(todo);
     }
 
     static loadElement(parent, element) {
@@ -39,22 +61,6 @@ export default class UI {
         }
     }
 
-    static homeEventListeners() {
-        const homebtns = document.querySelectorAll('.home');
-        homebtns.forEach((homebtn) => {
-            homebtn.addEventListener('click', () => {
-                const DOMProjects = document.querySelectorAll('.project');
-                const DOMHome = document.querySelectorAll('.home');
-                const main = document.querySelector('main');
-                this.removeClassSelected(DOMProjects);
-                this.removeClassSelected(DOMHome);
-                homebtn.classList.add('selected');
-                // Remove everything from main
-                this.removeAllChildren(main);
-            });
-        });
-    }
-
     static projectEventListeners() {
         const projects = document.querySelector('#projects');
         const projectForm = document.querySelector('#project-form');
@@ -65,18 +71,18 @@ export default class UI {
             if (input.value === '') {
                 // Do nothing
             } else {
-                // console.log(input.value);
-                // Get input.value from user
                 // Apend new project to librarian
                 const newProject = new Project(input.value);
                 Librarian.addProject(newProject);
                 // Render all objects in librarian
                 this.renderAllProjects();
-                const PROJECTS = Librarian.getAllProjects();
-                console.log(PROJECTS);
-                console.log(PROJECTS.length);
-                // console.log(PROJECTS[0].getTitle());
                 projects.removeChild(projectForm);
+                UI.projectDeleteEventListener();
+                // Delete everything from main
+                const main = document.querySelector('main');
+                this.removeAllChildren(main);
+                // Save localStorage
+                Librarian.saveAllProjects();
                 // Give eventlisteners to project buttons
                 const ProjectList = document.querySelectorAll('.project');
                 ProjectList.forEach((project) => {
@@ -102,13 +108,44 @@ export default class UI {
                         this.addTodoEventListener();
                         this.addDetailsEventListener();
                         this.editTodoEventListener();
-                        console.log(clickedProject);
+                        this.todoDeleteEventListener();
                     });
                 });
             }
         });
         cancelBtn.addEventListener('click', () => {
             projects.removeChild(projectForm);
+        });
+    }
+
+    static startupEventListener() {
+        UI.projectDeleteEventListener();
+        const ProjectList = document.querySelectorAll('.project');
+        ProjectList.forEach((project) => {
+            project.addEventListener('click', () => {
+                // Remove selected class from other projects/home
+                const DOMProjects =
+                    document.querySelectorAll('.project');
+                const DOMHome = document.querySelectorAll('.home');
+                const main = document.querySelector('main');
+                this.removeClassSelected(DOMProjects);
+                this.removeClassSelected(DOMHome);
+                // Add selected class
+                project.classList.add('selected');
+                const clickedProject = project.firstChild.textContent;
+                // Remove everything from main
+                this.removeAllChildren(main);
+                // Load todos first
+                const foundProject = this.findProject(clickedProject);
+                this.renderProjectTodos(foundProject);
+                // Load add todo button
+                main.appendChild(this.renderAddTodo());
+                // Add eventlisteners
+                this.addTodoEventListener();
+                this.addDetailsEventListener();
+                this.editTodoEventListener();
+                this.todoDeleteEventListener();
+            });
         });
     }
 
@@ -152,9 +189,6 @@ export default class UI {
                 date.value,
                 selectedPriority
             );
-            console.log(title.value);
-            console.log(title);
-            console.log(newTodo);
             foundProject.appendTodo(newTodo);
             // Remove all child elements
             const main = document.querySelector('main');
@@ -167,13 +201,15 @@ export default class UI {
             UI.addTodoEventListener();
             UI.addDetailsEventListener();
             UI.editTodoEventListener();
+            UI.todoDeleteEventListener();
             // Remove taskform from screen
             const body = document.querySelector('body');
             const taskForm = document.querySelector('#task-form');
             body.removeChild(taskForm);
+            // Save localStorage
+            Librarian.saveAllProjects();
         }
         todobtn.addEventListener('click', () => {
-            console.log(todobtn);
             // Render form
             body.append(this.addTodoForm());
             // Variables
@@ -224,9 +260,6 @@ export default class UI {
                     body.removeChild(TASKEDITOR);
                 });
                 CONFIRMBTN.addEventListener('click', () => {
-                    // Before
-                    console.log(TODO);
-                    console.log(Librarian.getAllProjects());
                     // Update TODO
                     const newTitle = document.querySelector('#edit-title');
                     const newDesc = document.querySelector('#edit-description');
@@ -246,8 +279,8 @@ export default class UI {
                         newPriority
                     );
                     // Check if todo is updated
-                    console.log(Librarian.getAllProjects());
-                    const clickedProject = this.findSelectedProject().firstChild.textContent;
+                    const clickedProject =
+                        this.findSelectedProject().firstChild.textContent;
                     const foundProject = this.findProject(clickedProject);
                     // Render updated projects
                     const main = document.querySelector('main');
@@ -261,6 +294,8 @@ export default class UI {
                     const body = document.querySelector('body');
                     const taskEditor = document.querySelector('#task-editor');
                     body.removeChild(taskEditor);
+                    // Save localStorage
+                    Librarian.saveAllProjects();
                 });
             });
         });
@@ -277,7 +312,6 @@ export default class UI {
                     document.querySelector('.selected').firstChild.textContent;
                 const foundProject = this.findProject(selectedProject);
                 const todo = this.findTodo(foundProject, todoTitle);
-                console.log(todo);
                 const body = document.querySelector('body');
                 body.appendChild(
                     this.detailsTemplate(
@@ -296,6 +330,102 @@ export default class UI {
                 });
             });
         });
+    }
+
+    static projectDeleteEventListener() {
+        const DELETEBTNS = document.querySelectorAll('.closebtn');
+        DELETEBTNS.forEach((button) => {
+            button.addEventListener('click', () => {
+                const DOMProject = button.parentElement;
+                const projectTitle = DOMProject.firstChild.textContent;
+                const project = this.findProject(projectTitle);
+                const projectIndex = this.findProjectIndex(projectTitle);
+                const PROJECTS = Librarian.getAllProjects();
+                PROJECTS.splice(projectIndex, 1);
+                // Render new projects
+                this.renderAllProjects();
+                // Event listeners
+                UI.projectDeleteEventListener();
+                // Save localStorage
+                Librarian.saveAllProjects();
+                const ProjectList = document.querySelectorAll('.project');
+                ProjectList.forEach((projects) => {
+                    projects.addEventListener('click', () => {
+                        // Remove selected class from other projects/home
+                        const DOMProjects =
+                            document.querySelectorAll('.project');
+                        const DOMHome = document.querySelectorAll('.home');
+                        const main = document.querySelector('main');
+                        this.removeClassSelected(DOMProjects);
+                        this.removeClassSelected(DOMHome);
+                        // Add selected class
+                        projects.classList.add('selected');
+                        const clickedProject = projects.firstChild.textContent;
+                        // Remove everything from main
+                        this.removeAllChildren(main);
+                        // Load todos first
+                        const foundProject = this.findProject(clickedProject);
+                        this.renderProjectTodos(foundProject);
+                        // Load add todo button
+                        main.appendChild(this.renderAddTodo());
+                        // Add eventlisteners
+                        this.addTodoEventListener();
+                        this.addDetailsEventListener();
+                        this.editTodoEventListener();
+                        this.todoDeleteEventListener();
+                    });
+                });
+            });
+        });
+    }
+
+    static todoDeleteEventListener() {
+        const DELETEBTNS = document.querySelectorAll('.deletebtn');
+        DELETEBTNS.forEach((button) => {
+            button.addEventListener('click', () => {
+                const todoContainer = button.parentElement.parentElement;
+                const todoTitle = todoContainer.querySelector('.task-title');
+                const selectedProjectTitle = this.findSelectedProject();
+                const selectedProject = this.findProject(
+                    selectedProjectTitle.firstChild.textContent
+                );
+                const todoIndex = this.findTodoIndex(
+                    selectedProject,
+                    todoTitle.textContent
+                );
+                const projectTodos = selectedProject.getTodos();
+                // Delete todo using index
+                projectTodos.splice(todoIndex, 1);
+                // Render new page todos
+                const main = document.querySelector('main');
+                this.removeAllChildren(main);
+                this.renderProjectTodos(selectedProject);
+                main.appendChild(this.renderAddTodo());
+                this.addTodoEventListener();
+                this.addDetailsEventListener();
+                this.editTodoEventListener();
+                // Save localStorage
+                Librarian.saveAllProjects();
+            });
+        });
+    }
+
+    static findTodoIndex(project, keyword) {
+        const TODOS = project.getTodos();
+        for (let i = 0; i < TODOS.length; i++) {
+            if (TODOS[i].getTitle() === keyword) {
+                return i;
+            }
+        }
+    }
+
+    static findProjectIndex(keyword) {
+        const PROJECTS = Librarian.getAllProjects();
+        for (let i = 0; i < PROJECTS.length; i++) {
+            if (PROJECTS[i].getTitle() === keyword) {
+                return i;
+            }
+        }
     }
 
     static findTodo(project, keyword) {
@@ -357,6 +487,7 @@ export default class UI {
     static renderAllProjects() {
         const PROJECTS = Librarian.getAllProjects();
         const DOMContainer = document.querySelector('#projects-list');
+        console.log(PROJECTS);
         // Remove any existing children from DOM projects container
         this.removeAllChildren(DOMContainer);
         // Now render everything in the library projects array

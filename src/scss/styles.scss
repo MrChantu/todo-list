@@ -266,9 +266,17 @@ input:focus {
 }
 
 .task-Medium {
+    border-left: 5px solid #ffc107;
+    border-right: 5px solid #d7d7d7;
+    border-top: 5px solid #d7d7d7;
+    border-bottom: 5px solid #d7d7d7;
 }
 
 .task-Low {
+    border-left: 5px solid #198754;
+    border-right: 5px solid #d7d7d7;
+    border-top: 5px solid #d7d7d7;
+    border-bottom: 5px solid #d7d7d7;
 }
 
 .task {

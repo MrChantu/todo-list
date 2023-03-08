@@ -27,7 +27,7 @@ export class Todo {
         this.description = description;
         this.due = due;
         this.priority = priority;
-    }
+    };
 
     getTitle = () => this.title;
 
@@ -40,6 +40,14 @@ export class Todo {
 
 export class Librarian {
     static projects = [];
+
+    static setProjects(projectArray)  {
+        this.projects = projectArray;
+    }
+
+    static saveAllProjects() {
+        localStorage.setItem('ALLPROJECTS', JSON.stringify(this.projects));
+    }
 
     static getAllProjects() {
         return Librarian.projects;

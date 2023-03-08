@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>CheckItOff</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap"
+            rel="stylesheet" />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        <script src="main.js" defer></script>
+    </head>
+    <body>
+        <header>
+            <h1><span class="green">Check</span>ItOff</h1>
+        </header>
+        <nav>
+            <div id="home">
+                <h1 class="bottom">Home</h1>
+                <div class="home selected" id="alltasks">
+                    <span class="material-symbols-outlined">inbox</span>
+                    <div>All Tasks</div>
+                </div>
+                <div class="home" id="today">
+                    <span class="material-symbols-outlined">today</span>
+                    <div>Today</div>
+                </div>
+            </div>
+            <div id="projects">
+                <h1>Projects</h1>
+                <div id="addproject">
+                    <span class="material-symbols-outlined">add</span>Add
+                    Project
+                </div>
+                <div id="projects-list"></div>
+            </div>
+        </nav>
+        <main></main>
+        <!--
+        <div id="task-editor">
+            <div>
+                <div id="task-details-header">
+                    <h2>Details</h2>
+                    <span class="material-symbols-outlined" id="task-details-close">close</span>
+                </div>
+                <div id="task-details-body">
+                    <h4>Title</h4>
+                    <div>My Title</div>
+                    <h4>Description</h4>
+                    <div>This is a description.</div>
+                    <h4>Date</h4>
+                    <div>3-6-2023</div>
+                    <h4>Priority</h4>
+                    <div>High</div>
+                </div>
+            </div>
+        </div>
+        -->
+        <!--
+        <div id="task-form">
+            <div>
+        <div id="task-header">
+            <h2>Edit Task</h2>
+            <span class="material-symbols-outlined" id="edit-closebtn">
+                close
+            </span>
+        </div>
+        <div>
+            <label for="title">Title</label>
+            <input id="edit-title" maxlength="16" type="text" value="${title}"/>
+        </div>
+        <div>
+            <label for="description">Description</label>
+            <input id="edit-description" type="text" value="${description}"/>
+        </div>
+        <div>
+            <label for="due">Date</label>
+            <input id="edit-due" type="date" value="${date}"/>
+        </div>
+        <div>
+            <label for="priority-select">Priority</label>
+            <div id="edit-priority-select">
+                <input
+                    type="radio"
+                    class="btn-check"
+                    name="options"
+                    id="option1"
+                    autocomplete="off" value="Low" />
+                <label class="btn btn-outline-success" for="option1"
+                    >Low</label
+                >
+
+                <input
+                    type="radio"
+                    class="btn-check"
+                    name="options"
+                    id="option2"
+                    autocomplete="off" value="Medium" />
+                <label class="btn btn-outline-warning" for="option2"
+                    >Medium</label
+                >
+
+                <input
+                    type="radio"
+                    class="btn-check"
+                    name="options"
+                    id="option3"
+                    autocomplete="off" value="High" />
+                <label class="btn btn-outline-danger" for="option3"
+                    >High</label
+                >
+            </div>
+        </div>
+        <div id="task-buttons">
+            <button id="confirm-edit"
+                type="button"
+                class="btn btn-outline-primary btn-lg">
+                Confirm
+            </button>
+        </div>
+    </div>
+        </div>
+        -->
+    </body>
+</html>

@@ -2,6 +2,7 @@ import Project, { Librarian, Todo } from './Classes';
 
 export default class UI {
     static loadEventListeners() {
+        this.menuEventListener();
         const addProject = document.querySelector('#addproject');
         addProject.addEventListener('click', () => {
             const projects = document.querySelector('#projects');
@@ -59,6 +60,16 @@ export default class UI {
         for (let i = 0; i < elementsArray.length; i++) {
             elementsArray[i].classList.remove('selected');
         }
+    }
+
+    static menuEventListener() {
+        const MENUBTN = document.querySelector('.menu');
+        MENUBTN.addEventListener('click', () => {
+            console.log(MENUBTN);
+            const NAV = document.querySelector('nav');
+            NAV.style.display = NAV.style.display === 'block' ? 'none' : 'block';
+            console.log(NAV.style.display);
+        });
     }
 
     static projectEventListeners() {
@@ -124,8 +135,7 @@ export default class UI {
         ProjectList.forEach((project) => {
             project.addEventListener('click', () => {
                 // Remove selected class from other projects/home
-                const DOMProjects =
-                    document.querySelectorAll('.project');
+                const DOMProjects = document.querySelectorAll('.project');
                 const DOMHome = document.querySelectorAll('.home');
                 const main = document.querySelector('main');
                 this.removeClassSelected(DOMProjects);

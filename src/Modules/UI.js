@@ -62,12 +62,33 @@ export default class UI {
         }
     }
 
+    static doesTodoExist(project, title) {
+        const PROJECTTODOS = project.getTodos();
+        for (let i = 0; i < PROJECTTODOS.length; i++) {
+            if (PROJECTTODOS[i].getTitle() === title) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static doesProjectExist(title) {
+        const PROJECTS = Librarian.getAllProjects();
+        for (let i = 0; i < PROJECTS.length; i++) {
+            if (PROJECTS[i].getTitle() === title) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     static menuEventListener() {
         const MENUBTN = document.querySelector('.menu');
         MENUBTN.addEventListener('click', () => {
             console.log(MENUBTN);
             const NAV = document.querySelector('nav');
-            NAV.style.display = NAV.style.display === 'block' ? 'none' : 'block';
+            NAV.style.display =
+                NAV.style.display === 'block' ? 'none' : 'block';
             console.log(NAV.style.display);
         });
     }
@@ -80,6 +101,8 @@ export default class UI {
         createBtn.addEventListener('click', () => {
             const input = document.querySelector('#project-input');
             if (input.value === '') {
+                // Do nothing
+            } else if (this.doesProjectExist(input.value)) {
                 // Do nothing
             } else {
                 // Apend new project to librarian
@@ -193,31 +216,37 @@ export default class UI {
             const foundProject = UI.findProject(
                 selectedProject.firstChild.textContent
             );
-            const newTodo = new Todo(
-                title.value,
-                desc.value,
-                date.value,
-                selectedPriority
-            );
-            foundProject.appendTodo(newTodo);
-            // Remove all child elements
-            const main = document.querySelector('main');
-            UI.removeAllChildren(main);
-            // Render todos
-            UI.renderProjectTodos(foundProject);
-            // Render addtodo button
-            main.append(UI.renderAddTodo());
-            // Add eventlisteners back
-            UI.addTodoEventListener();
-            UI.addDetailsEventListener();
-            UI.editTodoEventListener();
-            UI.todoDeleteEventListener();
-            // Remove taskform from screen
-            const body = document.querySelector('body');
-            const taskForm = document.querySelector('#task-form');
-            body.removeChild(taskForm);
-            // Save localStorage
-            Librarian.saveAllProjects();
+            if (title.value === '') {
+                // Do nothing
+            } else if (UI.doesTodoExist(foundProject, title.value)) {
+                // Do nothing
+            } else {
+                const newTodo = new Todo(
+                    title.value,
+                    desc.value,
+                    date.value,
+                    selectedPriority
+                );
+                foundProject.appendTodo(newTodo);
+                // Remove all child elements
+                const main = document.querySelector('main');
+                UI.removeAllChildren(main);
+                // Render todos
+                UI.renderProjectTodos(foundProject);
+                // Render addtodo button
+                main.append(UI.renderAddTodo());
+                // Add eventlisteners back
+                UI.addTodoEventListener();
+                UI.addDetailsEventListener();
+                UI.editTodoEventListener();
+                UI.todoDeleteEventListener();
+                // Remove taskform from screen
+                const body = document.querySelector('body');
+                const taskForm = document.querySelector('#task-form');
+                body.removeChild(taskForm);
+                // Save localStorage
+                Librarian.saveAllProjects();
+            }
         }
         todobtn.addEventListener('click', () => {
             // Render form
@@ -355,7 +384,7 @@ export default class UI {
                 // Render new projects
                 this.renderAllProjects();
                 // Event listeners
-                UI.projectDeleteEventListener();
+                this.projectDeleteEventListener();
                 // Save localStorage
                 Librarian.saveAllProjects();
                 const ProjectList = document.querySelectorAll('.project');
@@ -414,6 +443,7 @@ export default class UI {
                 this.addTodoEventListener();
                 this.addDetailsEventListener();
                 this.editTodoEventListener();
+                this.todoDeleteEventListener();
                 // Save localStorage
                 Librarian.saveAllProjects();
             });
